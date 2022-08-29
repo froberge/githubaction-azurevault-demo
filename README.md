@@ -2,6 +2,8 @@
 
 Welcome to the Introduction to using GitHub Actions with OpenShift !! 
 
+This repository uses Github actions to deploy a quarkus information. For more information on the code refer [here](docs/app-README.md)
+
 ## GitHub Action
 [GitHub Action](https://github.com/features/actions), automate, customize and execute your software development workflows right in your repository. You can discover, create and share actions to perform any job you'd like, including CI/CD and combine theses actions in a completely customized workflow.
 
