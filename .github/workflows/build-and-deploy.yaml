@@ -15,13 +15,6 @@ jobs:
   azure_vault:
     name: Connec to Azure Key Vault
     runs-on: ubuntu-20.04
-
-    outputs:
-      registry-user: ${{ steps.vaultSecrets.outputs.registry-user }}
-      registry-pwd: ${{ steps.vaultSecrets.outputs.registry-pwd }}
-      ocp-server: ${{ steps.vaultSecrets.outputs.ocp-server }}
-      ocp-github-actions-sa-token: ${{ steps.vaultSecrets.outputs.ocp-github-actions-sa-token }}
-      gh-access-pat: ${{ steps.vaultSecrets.outputs.gh-access-pat }}
       
     steps:
       - name: Azure Login
@@ -30,11 +23,17 @@ jobs:
           creds: ${{ env.AZURE_CREDENTIALS }}
 
       - name: Retrieve Key Vault Secrets
-        id: vaultSecrets
+        id: secrets
         uses: Azure/get-keyvault-secrets@v1
         with:
           keyvault: ${{ env.AZURE_KEY_VAULT }}
           secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token, gh-access-pat'
+    outputs:
+      registry-user: ${{ steps.secrets.outputs.registry-user }}
+      registry-pwd: ${{ steps.secrets.outputs.registry-pwd }}
+      ocp-server: ${{ steps.secrets.outputs.ocp-server }}
+      ocp-github-actions-sa-token: ${{ steps.secrets.outputs.ocp-github-actions-sa-token }}
+      gh-access-pat: ${{ steps.secrets.outputs.gh-access-pat }}
 
   install_runner: 
     name: Install Runner 
