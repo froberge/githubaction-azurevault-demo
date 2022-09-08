@@ -40,9 +40,9 @@ jobs:
       - uses: redhat-actions/openshift-actions-runner-installer@v1 
         with: 
           github_pat: ${{ steps.vaultSecrets.outputs.gh-access-pat }}   
-          runner_location: redhat-actions                               
-          runner_image: quay.io/redhat-github-actions/java-runner-11 
-          runner_labels: openshift, java                                
+          # runner_location: redhat-actions                               
+          # runner_image: quay.io/redhat-github-actions/java-runner-11 
+          # runner_labels: openshift, java                                
   
   # build-quarkus: 
   #   name: Self Hosted Quarkus Build and Test
