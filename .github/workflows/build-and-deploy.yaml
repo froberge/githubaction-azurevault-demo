@@ -27,7 +27,7 @@ jobs:
         uses: Azure/get-keyvault-secrets@v1
         with:
           keyvault: ${{ env.AZURE_KEY_VAULT }}
-          secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token'
+          secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token, gh-access-pat'
 
       - name: Log in to OpenShift
         uses: redhat-actions/oc-login@v1
@@ -39,9 +39,9 @@ jobs:
       
       - uses: redhat-actions/openshift-actions-runner-installer@v1 
         with: 
-          github_pat: ${{ secrets.GITHUB_PAT }}     # Personal access token with organization permissions
-          runner_location: redhat-actions                               # Install organization level runners
-          runner_image: quay.io/redhat-github-actions/java-runner-11    # Use our prebuilt Java runner image
+          github_pat: ${{ steps.vaultSecrets.outputs.gh-access-pat }}   
+          runner_location: redhat-actions                               
+          runner_image: quay.io/redhat-github-actions/java-runner-11 
           runner_labels: openshift, java                                
   
   # build-quarkus: 
