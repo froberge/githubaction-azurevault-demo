@@ -46,7 +46,7 @@ jobs:
       uses: Azure/get-keyvault-secrets@v1
       with:
         keyvault: ${{ env.AZURE_KEY_VAULT }}
-        secrets: 'registry-pwd,ocp-server,ocp-token'
+        secrets: 'registry-pwd,ocp-server,ocp-token-1'
 
     - name: Check out repository
       uses: actions/checkout@v3
@@ -89,7 +89,7 @@ jobs:
       uses: redhat-actions/oc-login@v1
       with:
         openshift_server_url: ${{ steps.vaultSecrets.outputs.ocp-server }}
-        openshift_token: ${{ steps.vaultSecrets.outputs.ocp-token }}
+        openshift_token: ${{ steps.vaultSecrets.outputs.ocp-token-1 }}
         insecure_skip_tls_verify: true
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
