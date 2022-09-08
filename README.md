@@ -1,39 +1,61 @@
-# Introduction to using GitHub Actions with Red Hat OpenShift.
+# Introduction to using GitHub Actions Runner on OpenShift.
 
-Welcome to the Introduction to using GitHub Actions with OpenShift !! 
+Welcome to the Introduction to using GitHub Actions Runner on  OpenShift !! 
 
-This repository uses Github actions to deploy a quarkus information. For more information on the code refer [here](docs/app-README.md)
+
+This demo will show how to use self-Hosted GitHub Actions Runners to build and deploy a Quarkus application. For more information on the code refer [here](docs/app-README.md).
 
 ## GitHub Action
 [GitHub Action](https://github.com/features/actions), automate, customize and execute your software development workflows right in your repository. You can discover, create and share actions to perform any job you'd like, including CI/CD and combine theses actions in a completely customized workflow.
 
 
+## GitHub Action Runner
+[GitHub Action Runner](https://github.com/actions/runner), is the application that runs a job from a GitHub Actions workflow. It is used by GitHub Actions in the hosted virtual environments, or you can self-host the runner in your own environment.
+
+By default, the infrastructure is provides by GiHub, however, it possible for users to run their own runners, this is call `Self-hosted runners`. They can be almost any physical or virtual machine, with the the runner software supporting many operating systems and architectures.
+
+Benefits:
+1. Works with GitHub Enterprise Service.
+1. No Usage limits
+1. Persistent disk
+
+
 ## Overview
 
-In this demo we will walk you through how use `GitHub Actions` to push code to `Red Hat OpenShift`. We will look at bacis concepts and how to create a simple workflows as well as customize a GitHub Actions Workflows using different component from the [Red Hat GitHub Action Page](https://github.com/redhat-actions).
-
-:clipboard: Currently there is 2 working demo branch each with their workflows.
-* working demo with starter flow
-* working demo with s2i.
+In this demo we will walk you through how to use a self-hosted `GitHub Action Runner` on openshift, to build and deploy code on `Red Hat Openshift`. Wee will also secure the GitHub Action using [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview). We will take a look at the self-hosted runner, to run a customize and secure GitHub Actions Workflows using different component from the [Red Hat GitHub Action Page](https://github.com/redhat-actions).
 
 
 ### Prerequisites
 
 * Any Openshift cluster 4.x.
 * OpenShift CLI `oc` install and connected to your cluster
+* [Helm](https://helm.sh/)
 * Access to [GitHub](https://github.com)
-* A [clone/fork](https://github.com/froberge/ocp-githubaction-demo) of this repository on your GitHub account
 * Access to [Quay.io](https://quay.io/)
+* Access to [Azure Porttal](https://portal.azure.com/#home)
 
 
-### OpenShift Cluster
-For those who don't have and access to an OpenShift cluster we can use the free [Red Hat OpenShift Sandbox](https://developers.redhat.com/products/openshift/overview). 
-![sanbox](docs/images/redhat-sandbox.png). If you don't have one I encourage you to use it. 
+#### OpenShift Actions runners
+The easiest way to add self-hosted runners to your Red Hat OpenShift environment is to use the `OpenShift Actions Runner Installer`.
 
-:raising_hand: This is what we will you for this demo. 
+1.
+
+For this demo we will be using GitHug Actions runners onto an existing OpenShift cluster. Red Hat as developed a set og tools to help installing this.
+* [OpenShift Action runner](https://github.com/redhat-actions/openshift-actions-runners) which consist of a set of container images tahat run the GitHub Actions runner
+* [OpenShift Runner Chart](https://github.com/redhat-actions/openshift-actions-runner-chart), Helm chart to deploy pods from those images.
+* [OpenShift Actions Runner Installer](https://github.com/redhat-actions/openshift-actions-runner-installer), an action to automate the helm install, building the runner mangement into your workflows.
+
+###### OpenShift Action Runner Installer
+
+1. Connect to OpenShift.
+2. Create a new project
+    ```
+    oc new-project github-runner
+    ```
+3. Follow the steps listed to install [openshift-action-runners](https://github.com/redhat-actions/openshift-actions-runners)
 
 
-###### Setup github secret
+---
 
 We need to create 3 secrets in the repository for the workflow to use.
 

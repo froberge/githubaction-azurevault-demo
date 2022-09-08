@@ -17,7 +17,7 @@ on:
 env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  OPENSHIFT_NAMESPACE: froberge-dev
+  OPENSHIFT_NAMESPACE: github-runner
 
   APP_NAME: "simple-quarkus-service-gh-action"
   IMAGE_TAGS: latest-${{ github.sha }}
