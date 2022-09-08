@@ -12,9 +12,9 @@ env:
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
 
 jobs: 
-  install_runner: 
-    name: Install Runner 
-    runs-on: ubuntu-20.04 
+  connect_azure_vault:
+    name: Connec to Azure Key Vault
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Azure Login
@@ -29,6 +29,12 @@ jobs:
           keyvault: ${{ env.AZURE_KEY_VAULT }}
           secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token, gh-access-pat'
 
+  install_runner: 
+    name: Install Runner 
+    runs-on: ubuntu-20.04
+    needs: connect_azure_vault
+
+    steps:
       - name: Log in to OpenShift
         uses: redhat-actions/oc-login@v1
         with:
