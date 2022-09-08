@@ -12,8 +12,8 @@ env:
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
 
 jobs: 
-  azure_vault:
-    name: Connec to Azure Key Vault
+  azure_login:
+    name: Connec to Azure
     runs-on: ubuntu-20.04
       
     steps:
@@ -22,39 +22,33 @@ jobs:
         with:
           creds: ${{ env.AZURE_CREDENTIALS }}
 
+  install_runner: 
+    name: Install Runner 
+    runs-on: ubuntu-20.04
+    needs: azure_login
+
+    steps:
       - name: Retrieve Key Vault Secrets
-        id: secrets
+        id: az_secrets
         uses: Azure/get-keyvault-secrets@v1
         with:
           keyvault: ${{ env.AZURE_KEY_VAULT }}
           secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token, gh-access-pat'
-    outputs:
-      registry-user: ${{ steps.secrets.outputs.registry-user }}
-      registry-pwd: ${{ steps.secrets.outputs.registry-pwd }}
-      ocp-server: ${{ steps.secrets.outputs.ocp-server }}
-      ocp-github-actions-sa-token: ${{ steps.secrets.outputs.ocp-github-actions-sa-token }}
-      gh-access-pat: ${{ steps.secrets.outputs.gh-access-pat }}
 
-  install_runner: 
-    name: Install Runner 
-    runs-on: ubuntu-20.04
-    needs: azure_vault
-
-    steps:
       - name: Log in to OpenShift
         uses: redhat-actions/oc-login@v1
         with:
-          openshift_server_url: ${{ needs.azure_vault.outputs.ocp-server }}
-          openshift_token: ${{ needs.azure_vault.outputs.ocp-github-actions-sa-token }}
+          openshift_server_url: ${{ steps.az_secrets.outputs.ocp-server }}
+          openshift_token: ${{ steps.az_secrets.outputs.ocp-github-actions-sa-token }}
           insecure_skip_tls_verify: true
           namespace: ${{ env.OPENSHIFT_NAMESPACE }}
       
       - uses: redhat-actions/openshift-actions-runner-installer@v1 
         with: 
-          github_pat: ${{ needs.azure_vault.outputs.gh-access-pat }}   
+          github_pat: ${{ steps.az_secrets.outputs.gh-access-pat }} 
+          runner_labels: openshift, java
           # runner_location: redhat-actions                               
           # runner_image: quay.io/redhat-github-actions/java-runner-11 
-          # runner_labels: openshift, java                                
   
   # build-quarkus: 
   #   name: Self Hosted Quarkus Build and Test
