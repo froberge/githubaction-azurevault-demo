@@ -12,10 +12,17 @@ env:
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
 
 jobs: 
-  connect_azure_vault:
+  azure_vault:
     name: Connec to Azure Key Vault
     runs-on: ubuntu-20.04
 
+    outputs:
+      registry-user: ${{ steps.vaultSecrets.outputs.registry-user }}
+      registry-pwd: ${{ steps.vaultSecrets.outputs.registry-pwd }}
+      ocp-server: ${{ steps.vaultSecrets.outputs.ocp-server }}
+      ocp-github-actions-sa-token: ${{ steps.vaultSecrets.outputs.ocp-github-actions-sa-token }}
+      gh-access-pat: ${{ steps.vaultSecrets.outputs.gh-access-pat }}
+      
     steps:
       - name: Azure Login
         uses: azure/login@v1
@@ -32,20 +39,20 @@ jobs:
   install_runner: 
     name: Install Runner 
     runs-on: ubuntu-20.04
-    needs: connect_azure_vault
+    needs: azure_vault
 
     steps:
       - name: Log in to OpenShift
         uses: redhat-actions/oc-login@v1
         with:
-          openshift_server_url: ${{ steps.vaultSecrets.outputs.ocp-server }}
-          openshift_token: ${{ steps.vaultSecrets.outputs.ocp-github-actions-sa-token }}
+          openshift_server_url: ${{ needs.azure_vault.outputs.ocp-server }}
+          openshift_token: ${{ needs.azure_vault.outputs.ocp-github-actions-sa-token }}
           insecure_skip_tls_verify: true
           namespace: ${{ env.OPENSHIFT_NAMESPACE }}
       
       - uses: redhat-actions/openshift-actions-runner-installer@v1 
         with: 
-          github_pat: ${{ steps.vaultSecrets.outputs.gh-access-pat }}   
+          github_pat: ${{ needs.azure_vault.outputs.gh-access-pat }}   
           # runner_location: redhat-actions                               
           # runner_image: quay.io/redhat-github-actions/java-runner-11 
           # runner_labels: openshift, java                                
