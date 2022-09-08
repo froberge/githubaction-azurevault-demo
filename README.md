@@ -35,12 +35,18 @@ In this demo we will walk you through how to use a self-hosted `GitHub Action Ru
 * Access to [Azure Porttal](https://portal.azure.com/#home)
 
 
+### Creation of the Azure Key Vault
+:warning: TBD
+
+### Creation of the Azure Service Principal to access Key Vault.
+:warning: TBD
+
+
+
 #### OpenShift Actions runners
 The easiest way to add self-hosted runners to your Red Hat OpenShift environment is to use the `OpenShift Actions Runner Installer`.
 
-1.
-
-For this demo we will be using GitHug Actions runners onto an existing OpenShift cluster. Red Hat as developed a set og tools to help installing this.
+For this demo we will be using GitHug Actions runners onto an existing OpenShift cluster. Red Hat as developed a set of tools to help installing this.
 * [OpenShift Action runner](https://github.com/redhat-actions/openshift-actions-runners) which consist of a set of container images tahat run the GitHub Actions runner
 * [OpenShift Runner Chart](https://github.com/redhat-actions/openshift-actions-runner-chart), Helm chart to deploy pods from those images.
 * [OpenShift Actions Runner Installer](https://github.com/redhat-actions/openshift-actions-runner-installer), an action to automate the helm install, building the runner mangement into your workflows.
@@ -57,36 +63,52 @@ For this demo we will be using GitHug Actions runners onto an existing OpenShift
 
 ---
 
-We need to create 3 secrets in the repository for the workflow to use.
+### Creation of a service account on OpenShift
 
-1. The registry repository secret
-2. The OpenShift server location
-3. The OpenShift Token
+When logging in to an OpenShift cluster from an automated environment, it is recommended to use a functional Service Account rather than personal credentials. Refer [here](https://cookbook.openshift.org/accessing-an-openshift-cluster/how-can-i-create-a-service-account-for-scripted-access.html).
 
-* In the repository go to `Settings -> Secrets -> Actions `
-![setting-secret-action](docs/images/setting-secrets-actions.png)
-* Select New repository secret to create the first secret.
-    * Enter the name: `IMAGE_REGISTRY_PASSWORD`
-    * Enter the value:  The token value for quay.io
+Steps: ( They were validated on MacOs/Linux)
+1. Define the service account name
+    ```
+    export SA=github-actions-sa
+    ```
+1. Create the service account.
+    ```
+    oc create sa $SA
+    ```
+1. Find the secrest that were created.
+    ```
+    export SECRETS=$(oc get sa $SA -o jsonpath='{.secrets[*].name}{"\n"}') && echo $SECRETS
+    ```
+1. Describe the secret that contains the word `token. We will need this token in the Key Vault later.
+    ```
+    oc describe secret github-actions-sa-token-[REPLACE_WITH_YOUR_VALUE]
+    ```
+1. Give write permission to the Service Account
+    ```
+    oc policy add-role-to-user edit -z $SA
+    ```
 
-* Enter another repository secret
-    * Enter the name: `OPENSHIFT_SERVER`
-    * Enter the value:
-        * The cluster url retrieved with the OpenShift CLI.
-            ```
-            oc whoami --show-server
-            ```
-* Enter another repository secret
-    * Enter the name: `OPENSHIFT_TOKEN`
-    * Enter the value:  :warning: __This is a temporary token__
-        * Enter the token retrieved with the OpenShift CLI.
-            ```
-            oc whoami --show-token
-            ```
-    :zap:Create a service account in orther to have a more permenent solutions. [Follow this link](https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions) to know how. Use that token instead.
 
-    :clipboard: Make sure you have the permission on the user.
-    >oc policy add-role-to-user edit system:serviceaccount:[NAMESPACE]:[SERVICE_ACCOUNT]
+---
+
+### Adding secret in Azure Key Vault.
+
+We need to create 3 secrets in the azure key vault.
+
+1. `registry-pwd` -> The registry robot connection password.
+    Can be found on the registry. in this case we use quay.io
+2. `ocp-server` -> The OpenShift server location
+    ```
+    oc whoami --show-server
+    ```
+3. `ocp-github-actions-sa-token` -> The service account access token.   
+    Retrieve at the previous step. Creation of a service account.
+
+![azurekeyvault](docs/images/azure-key-vault-1.png)
+
+:clipboard: Make sure you have the permission on the user.
+>oc policy add-role-to-user edit system:serviceaccount:[NAMESPACE]:[SERVICE_ACCOUNT]
 
    
  ![all-secret](docs/images/all-secrets.png)
