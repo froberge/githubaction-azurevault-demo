@@ -18,12 +18,10 @@ env:
   OPENSHIFT_NAMESPACE: github-runner
   APP_NAME: "simple-quarkus-service-gh-action"
   IMAGE_TAGS: latest-${{ github.sha }}
-
   IMAGE_REGISTRY: quay.io/froberge
-  IMAGE_REGISTRY_USER: froberge+githubactions
 
-  AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS}}
   AZURE_KEY_VAULT: githubaction-vault1
+  AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS}}
 
 jobs:
   openshift-ci-cd:
@@ -31,24 +29,20 @@ jobs:
     runs-on: ubuntu-20.04
     environment: dev
 
-    outputs:
-      ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
-      SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
-
     steps:
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Retrieve Vault Secrets
+    - name: Retrieve Key Vault Secrets
       id: vaultSecrets
       uses: Azure/get-keyvault-secrets@v1
       with:
         keyvault: ${{ env.AZURE_KEY_VAULT }}
-        secrets: 'registry-pwd,ocp-server,ocp-github-actions-sa-token'
+        secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token'
 
-    - name: Check out repository
+    - name: Checkout code repository
       uses: actions/checkout@v3
 
     - name: Determine app name
@@ -76,7 +70,7 @@ jobs:
         image: ${{ steps.build_image.outputs.image }}
         tags: ${{ steps.build_image.outputs.tags }}
         registry: ${{ env.IMAGE_REGISTRY }}
-        username: ${{ env.IMAGE_REGISTRY_USER }}
+        username: ${{ steps.vaultSecrets.outputs.registry-user}}
         password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
 
     # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
