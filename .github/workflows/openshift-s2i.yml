@@ -5,14 +5,14 @@
 # - Log in to your OpenShift cluster
 # - Create an OpenShift app from the image and expose it to the internet
 
-# 👋 Visit our GitHub organization at https://github.com/redhat-actions/ to see our actions and provide feedback.
-
 name: OpenShift-s2i
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
-  push:
-    # Edit to the branch(es) you want to build and deploy on each push.
-    branches: [ main ]
+  release:
+    types: [published]
+  # push:
+  #   # Edit to the branch(es) you want to build and deploy on each push.
+  #   branches: [ main ]
 
 env:
   OPENSHIFT_NAMESPACE: github-runner
@@ -33,7 +33,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: ${{ env.AZURE_CREDENTIALS }}
 
     - name: Retrieve Key Vault Secrets
       id: vaultSecrets
