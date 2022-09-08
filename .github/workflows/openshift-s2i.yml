@@ -46,7 +46,7 @@ jobs:
       uses: Azure/get-keyvault-secrets@v1
       with:
         keyvault: ${{ env.AZURE_KEY_VAULT }}
-        secrets: 'IMAGE-REGISTRY-PASSWORD,OPENSHIFT-SERVER,OPENSHIFT-TOKEN'
+        secrets: 'registry-pwd,ocp-server,ocp-token'
 
     - name: Check out repository
       uses: actions/checkout@v3
@@ -77,7 +77,7 @@ jobs:
         tags: ${{ steps.build_image.outputs.tags }}
         registry: ${{ env.IMAGE_REGISTRY }}
         username: ${{ env.IMAGE_REGISTRY_USER }}
-        password: ${{ steps.vaultSecrets.outputs.IMAGE-REGISTRY-PASSWORD }}
+        password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
 
     # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
     - name: Install oc
@@ -88,8 +88,8 @@ jobs:
     - name: Log in to OpenShift
       uses: redhat-actions/oc-login@v1
       with:
-        openshift_server_url: ${{ steps.vaultSecrets.outputs.OPENSHIFT-SERVER }}
-        openshift_token: ${{ steps.vaultSecrets.outputs.OPENSHIFT-TOKEN }}
+        openshift_server_url: ${{ steps.vaultSecrets.outputs.ocp-server }}
+        openshift_token: ${{ steps.vaultSecrets.outputs.ocp-token }}
         insecure_skip_tls_verify: true
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
