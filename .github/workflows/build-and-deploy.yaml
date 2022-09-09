@@ -45,32 +45,32 @@ jobs:
           # runner_location: redhat-actions                               
           # runner_image: quay.io/redhat-github-actions/java-runner-11 
   
-  # build-quarkus: 
-  #   name: Self Hosted Quarkus Build and Test
+  build-quarkus: 
+    name: Self Hosted Quarkus Build and Test
     
-  #   runs-on: [ self-hosted, openshift, java ]             # Use the same labels we gave the runner above    
-  #   needs: install_runner                                 # Wait until the job above completes
+    runs-on: [ self-hosted, openshift, java ]             # Use the same labels we gave the runner above    
+    needs: install_runner                                 # Wait until the job above completes
 
-  #   env:
-  #     WORKDIR: getting-started                  
+    env:
+      WORKDIR: .                  
 
-  #   steps:
-  #     - uses: actions/checkout@v2                         # Checkout a java project to build
-  #       with:
-  #         repository: redhat-actions/quarkus-quickstarts
+    steps:
+      - uses: actions/checkout@v3                         # Checkout a java project to build
+        with:
+          repository: froberge/ocp-githubaction-azurevault-demo
 
-  #     # https://github.com/redhat-actions/quarkus-quickstarts/tree/master/getting-started#readme
+      # https://github.com/redhat-actions/quarkus-quickstarts/tree/master/getting-started#readme
 
-  #     - name: Install and build
-  #       run: ./mvnw install -ntp
-  #       working-directory: ${{ env.WORKDIR }}
+      - name: Install and build
+        run: ./mvnw install -ntp
+        working-directory: ${{ env.WORKDIR }}
 
-  #     - name: Run tests
-  #       run: ./mvnw test
-  #       working-directory: ${{ env.WORKDIR }}
+      - name: Run tests
+        run: ./mvnw test
+        working-directory: ${{ env.WORKDIR }}
 
-  #     - name: Upload jar artifacts
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: app-jar-files.zip
-  #         path: ${{ env.WORKDIR }}/target/*.jar
+      # - name: Upload jar artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: app-jar-files.zip
+      #     path: ${{ env.WORKDIR }}/target/*.jar
