@@ -59,8 +59,6 @@ jobs:
         with:
           repository: froberge/ocp-githubaction-azurevault-demo
 
-      # https://github.com/redhat-actions/quarkus-quickstarts/tree/master/getting-started#readme
-
       - name: Install and build
         run: ./mvnw install -ntp
         working-directory: ${{ env.WORKDIR }}
@@ -69,8 +67,28 @@ jobs:
         run: ./mvnw test
         working-directory: ${{ env.WORKDIR }}
 
-      # - name: Upload jar artifacts
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: app-jar-files.zip 
-      #     path: ${{ env.WORKDIR }}/target/*.jar
+      - name: Upload jar artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-jar-files.zip 
+          path: ${{ env.WORKDIR }}/target/*.jar
+
+  # build-image:
+  #   name: Self Hosted Podman package
+    
+  #   runs-on: [ self-hosted, openshift, java ]           
+  #   needs: install_runner         
+
+  #   steps:
+  #     - uses: actions/checkout@v3                         # Checkout a java project to build
+  #       with:
+  #         repository: froberge/ocp-githubaction-azurevault-demo
+
+  #     - name: Package image
+  #       run: ./mvnw install -ntp
+  #       working-directory: ${{ env.WORKDIR }}
+
+  #     - name: Run tests
+  #       run: ./mvnw test
+  #       working-directory: ${{ env.WORKDIR }}
+          
