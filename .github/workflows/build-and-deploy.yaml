@@ -28,6 +28,8 @@ jobs:
         with:
           keyvault: ${{ env.AZURE_KEY_VAULT }}
           secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token, gh-access-pat'
+        run: |
+          echo "set::-output name=ocp-server: $ocp-server"
 
     outputs:
       ocp-server: ${{ steps.az_secrets.outpouts.ocp-server }}
