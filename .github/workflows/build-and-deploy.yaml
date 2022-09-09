@@ -12,11 +12,12 @@ env:
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
 
 jobs: 
-  azure_login:
-    name: Connec to Azure
+  install_runner: 
+    name: Install Runner 
     runs-on: ubuntu-20.04
-      
+
     steps:
+
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -29,20 +30,10 @@ jobs:
           keyvault: ${{ env.AZURE_KEY_VAULT }}
           secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token, gh-access-pat'
 
-    outputs:
-      ocp-server: ${{ steps.az_secrets.outputs.ocp-server }}
-    
-
-  install_runner: 
-    name: Install Runner 
-    runs-on: ubuntu-20.04
-    needs: azure_login
-
-    steps:
       - name: Log in to OpenShift
         uses: redhat-actions/oc-login@v1
         with:
-          openshift_server_url: ${{ needs.azure_login.outputs.ocp-server }}
+          openshift_server_url: ${{ steps.az_secrets.outputs.ocp-server }}
           openshift_token: ${{ steps.az_secrets.outputs.ocp-github-actions-sa-token }}
           insecure_skip_tls_verify: true
           namespace: ${{ env.OPENSHIFT_NAMESPACE }}
