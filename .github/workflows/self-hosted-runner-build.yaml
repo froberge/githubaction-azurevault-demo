@@ -57,12 +57,12 @@ jobs:
         with:
           repository: froberge/ocp-githubaction-azurevault-demo
 
-      - name: Install and build
-        run: ./mvnw package
-        working-directory: ${{ env.WORKDIR }}
-
       - name: Run tests
         run: ./mvnw test
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Clean and Package
+        run: ./mvnw clean package
         working-directory: ${{ env.WORKDIR }}
 
       - name: Upload jar artifacts
