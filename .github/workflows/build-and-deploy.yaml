@@ -29,8 +29,8 @@ jobs:
           keyvault: ${{ env.AZURE_KEY_VAULT }}
           secrets: 'registry-user,registry-pwd,ocp-server,ocp-github-actions-sa-token, gh-access-pat'
 
-      outputs:
-        ocp-server: ${{ steps.az_secrets.outpouts.ocp-server }}
+    outputs:
+      ocp-server: ${{ steps.az_secrets.outpouts.ocp-server }}
     
 
   install_runner: 
