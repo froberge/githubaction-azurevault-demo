@@ -125,3 +125,14 @@ We need to create 3 secrets in the azure key vault.
 ![azurekeyvault](docs/images/azure-key-vault-1.png)
 
 ---
+
+#### Pipeline Path
+
+```mermaid
+flowchart LR;
+    A(Connect to Azure) --> B(Retrieve Secrets in Vault);
+    B --> C(Log to OCP);
+    C --> D(Install Runner);
+    D --> E(Build the Application)
+    E --> F(Upload packaged App)
+```
