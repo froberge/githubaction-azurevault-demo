@@ -58,7 +58,7 @@ jobs:
           repository: froberge/ocp-githubaction-azurevault-demo
 
       - name: Install and build
-        run: ./mvnw install -ntp
+        run: ./mvnw package
         working-directory: ${{ env.WORKDIR }}
 
       - name: Run tests

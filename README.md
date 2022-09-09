@@ -19,6 +19,14 @@ Benefits:
 1. No Usage limits
 1. Persistent disk
 
+#### OpenShift Actions runners
+The easiest way to add self-hosted runners to your Red Hat OpenShift environment is to use the `OpenShift Actions Runner Installer`.
+
+For this demo we will be using GitHug Actions runners onto an existing OpenShift cluster. Red Hat as developed a set of tools to help installing this.
+* [OpenShift Action runner](https://github.com/redhat-actions/openshift-actions-runners) which consist of a set of container images tahat run the GitHub Actions runner
+* [OpenShift Runner Chart](https://github.com/redhat-actions/openshift-actions-runner-chart), Helm chart to deploy pods from those images.
+* [OpenShift Actions Runner Installer](https://github.com/redhat-actions/openshift-actions-runner-installer), an action to automate the helm install, building the runner mangement into your workflows.
+
 
 ## Overview
 
@@ -115,25 +123,5 @@ We need to create 3 secrets in the azure key vault.
 1. `gh-access-pat` -> The Service account [Github personnal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 
 ![azurekeyvault](docs/images/azure-key-vault-1.png)
-
----
-
-#### OpenShift Actions runners
-The easiest way to add self-hosted runners to your Red Hat OpenShift environment is to use the `OpenShift Actions Runner Installer`.
-
-For this demo we will be using GitHug Actions runners onto an existing OpenShift cluster. Red Hat as developed a set of tools to help installing this.
-* [OpenShift Action runner](https://github.com/redhat-actions/openshift-actions-runners) which consist of a set of container images tahat run the GitHub Actions runner
-* [OpenShift Runner Chart](https://github.com/redhat-actions/openshift-actions-runner-chart), Helm chart to deploy pods from those images.
-* [OpenShift Actions Runner Installer](https://github.com/redhat-actions/openshift-actions-runner-installer), an action to automate the helm install, building the runner mangement into your workflows.
-
-###### OpenShift Action Runner Installer
-
-1. Connect to OpenShift.
-2. Create a new project
-    ```
-    oc new-project github-runner
-    ```
-3. Follow the steps listed to install [openshift-action-runners](https://github.com/redhat-actions/openshift-actions-runners)
-
 
 ---
