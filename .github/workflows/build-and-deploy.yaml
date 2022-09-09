@@ -5,8 +5,8 @@ on:
 env:
   OPENSHIFT_NAMESPACE: github-runner
   APP_NAME: "simple-quarkus-service-gh-action"
-  IMAGE_TAGS: latest-${{ github.sha }}
-  IMAGE_REGISTRY: quay.io/froberge
+  TAGS: latest-${{ github.sha }}
+  # IMAGE_REGISTRY: quay.io/froberge
 
   AZURE_KEY_VAULT: githubaction-vault1
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
@@ -43,52 +43,33 @@ jobs:
           github_pat: ${{ steps.az_secrets.outputs.gh-access-pat }} 
           runner_labels: openshift, java
           # runner_location: redhat-actions                               
-          runner_image: quay.io/redhat-github-actions/buildah-runner
+          runner_image: quay.io/redhat-github-actions/java-runner-11 
   
-  # build-quarkus: 
-  #   name: Self Hosted Quarkus Build and Test
+  build-quarkus: 
+    name: Self Hosted Quarkus Build and Test
     
-  #   runs-on: [ self-hosted, openshift, java ]             # Use the same labels we gave the runner above    
-  #   needs: install_runner                                 # Wait until the job above completes
+    runs-on: [ self-hosted, openshift, java ]             # Use the same labels we gave the runner above    
+    needs: install_runner                                 # Wait until the job above completes
 
-  #   env:
-  #     WORKDIR: .                  
-
-  #   steps:
-  #     - uses: actions/checkout@v3                         # Checkout a java project to build
-  #       with:
-  #         repository: froberge/ocp-githubaction-azurevault-demo
-
-  #     - name: Install and build
-  #       run: ./mvnw install -ntp
-  #       working-directory: ${{ env.WORKDIR }}
-
-  #     - name: Run tests
-  #       run: ./mvnw test
-  #       working-directory: ${{ env.WORKDIR }}
-
-  #     - name: Upload jar artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: app-jar-files.zip 
-  #         path: ${{ env.WORKDIR }}/target/*.jar
-
-  build-image:
-    name: Self Hosted Podman package
-    
-    runs-on: [ self-hosted, openshift, java ]           
-    needs: install_runner         
+    env:
+      WORKDIR: .                  
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3                         # Checkout a java project to build
         with:
           repository: froberge/ocp-githubaction-azurevault-demo
 
-      - name: Package image
-        run: podman build -t  ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}:${{ env.IMAGE_TAGS }} .
+      - name: Install and build
+        run: ./mvnw install -ntp
         working-directory: ${{ env.WORKDIR }}
 
-      # - name: Run tests
-      #   run: ./mvnw test
-      #   working-directory: ${{ env.WORKDIR }}
+      - name: Run tests
+        run: ./mvnw test
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Upload jar artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.APP_NAME}}-${{env.TAGS}}.zip 
+          path: ${{ env.WORKDIR }}/target/*.jar
           
