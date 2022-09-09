@@ -43,7 +43,7 @@ jobs:
           github_pat: ${{ steps.az_secrets.outputs.gh-access-pat }} 
           runner_labels: openshift, java
           # runner_location: redhat-actions                               
-          # runner_image: quay.io/redhat-github-actions/java-runner-11 
+          runner_image: quay.io/redhat-github-actions/java-runner-11 
   
   build-quarkus: 
     name: Self Hosted Quarkus Build and Test
@@ -55,30 +55,22 @@ jobs:
       WORKDIR: .                  
 
     steps:
-      - name: Checkout code repository
-        uses: actions/checkout@v3                         # Checkout a java project to build
+      - uses: actions/checkout@v3                         # Checkout a java project to build
         with:
           repository: froberge/ocp-githubaction-azurevault-demo
 
+      # https://github.com/redhat-actions/quarkus-quickstarts/tree/master/getting-started#readme
 
-      - name: Setup S2I and Build container
-        id: build_image
-        uses: redhat-actions/s2i-build@v2
-        with:
-          image: ${{ env.APP_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-          builder_image: 'registry.access.redhat.com/openjdk/openjdk-11-rhel7'
+      - name: Install and build
+        run: ./mvnw install -ntp
+        working-directory: ${{ env.WORKDIR }}
 
-      # - name: Install and build
-      #   run: ./mvnw install -ntp
-      #   working-directory: ${{ env.WORKDIR }}
-
-      # - name: Run tests
-      #   run: ./mvnw test
-      #   working-directory: ${{ env.WORKDIR }}
+      - name: Run tests
+        run: ./mvnw test
+        working-directory: ${{ env.WORKDIR }}
 
       # - name: Upload jar artifacts
       #   uses: actions/upload-artifact@v2
       #   with:
-      #     name: app-jar-files.zip
+      #     name: app-jar-files.zip 
       #     path: ${{ env.WORKDIR }}/target/*.jar
