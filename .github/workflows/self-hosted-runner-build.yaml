@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -47,15 +46,14 @@ jobs:
   
   build-quarkus: 
     name: Self Hosted Quarkus Build and Test
-    
-    runs-on: [ self-hosted, openshift, java ]             # Use the same labels we gave the runner above    
-    needs: install_runner                                 # Wait until the job above completes
+    runs-on: [ self-hosted, openshift, java ]          
+    needs: install_runner                               
 
     env:
       WORKDIR: .                  
 
     steps:
-      - uses: actions/checkout@v3                         # Checkout a java project to build
+      - uses: actions/checkout@v3
         with:
           repository: froberge/ocp-githubaction-azurevault-demo
 

@@ -103,14 +103,16 @@ Steps: ( They were validated on MacOs/Linux)
 
 We need to create 3 secrets in the azure key vault.
 
-1. `registry-pwd` -> The registry robot connection password.
+1. `registry-pwd` -> The registry service account connection password.
     Can be found on the registry. in this case we use quay.io
-2. `ocp-server` -> The OpenShift server location
+1. `registry-user` -> The registry service account user
+1. `ocp-server` -> The OpenShift server location
     ```
     oc whoami --show-server
     ```
-3. `ocp-github-actions-sa-token` -> The service account access token.   
+1. `ocp-github-actions-sa-token` -> The service account access token.   
     Retrieve at the previous step. Creation of a service account.
+1. `gh-access-pat` -> The Service account [Github personnal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 
 ![azurekeyvault](docs/images/azure-key-vault-1.png)
 
