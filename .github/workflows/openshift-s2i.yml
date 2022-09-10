@@ -7,12 +7,8 @@
 
 name: OpenShift-s2i
 on:
-  # https://docs.github.com/en/actions/reference/events-that-trigger-workflows
-  release:
-    types: [published]
-  # push:
-  #   # Edit to the branch(es) you want to build and deploy on each push.
-  #   branches: [ main ]
+  push:
+    branches: [ main ]
 
 env:
   OPENSHIFT_NAMESPACE: github-runner
@@ -26,7 +22,8 @@ env:
 jobs:
   openshift-ci-cd:
     name: Build and deploy to OpenShift
-    runs-on: ubuntu-20.04
+    #runs-on: ubuntu-20.04
+    runs-on: [  self-hosted, macOS, X64 ]
     environment: dev
 
     steps:
