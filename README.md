@@ -1,3 +1,5 @@
+[![OpenShift-s2i](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/openshift-s2i.yml/badge.svg?event=push)](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/openshift-s2i.yml)
+
 # Introduction to using GitHub Actions Runner on OpenShift.
 
 Welcome to the Introduction to using GitHub Actions Runner on  OpenShift !! 
