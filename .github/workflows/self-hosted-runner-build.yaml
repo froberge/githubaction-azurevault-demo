@@ -13,7 +13,7 @@ env:
 jobs: 
   install_runner: 
     name: Install Runner 
-    runs-on: ubuntu-20.04
+    runs-on: [  self-hosted, macOS, X64 ]
 
     steps:
       - name: Azure Login
