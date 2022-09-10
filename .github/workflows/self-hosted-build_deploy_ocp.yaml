@@ -1,4 +1,4 @@
-name: Build Quarkus Application
+name: Build and Deploy Quarkus Application on OCP
 on: 
   push:
     branches: [ main ]
@@ -6,7 +6,7 @@ on:
 env:
   OPENSHIFT_NAMESPACE: github-runner
   APP_NAME: "simple-quarkus-service-gh-action"
-  TAGS: -${{ github.sha }}
+  TAGS: latest-${{ github.sha }}
 
   AZURE_KEY_VAULT: githubaction-vault1
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
@@ -40,26 +40,18 @@ jobs:
       - uses: redhat-actions/openshift-actions-runner-installer@v1 
         with: 
           github_pat: ${{ steps.az_secrets.outputs.gh-access-pat }} 
-          runner_labels: openshift, java
+          runner_labels: openshift, buildah
           # runner_location: redhat-actions                               
-          runner_image: quay.io/redhat-github-actions/java-runner-11  
+          runner_image: quay.io/redhat-github-actions/buildah-runner 
   build-deploy: 
     name: Self Hosted OCP Build and Deploy
-    runs-on: [ self-hosted, openshift, java ]          
+    runs-on: [ self-hosted, openshift, buildah ]          
     needs: retrieve_secrets                               
-
-    env:
-      WORKDIR: .                  
 
     steps:
       - uses: actions/checkout@v3
         with:
           repository: froberge/ocp-githubaction-azurevault-demo
-
-      - name: Determine image tags
-        if: env.IMAGE_TAGS == ''
-        run: |
-          echo "IMAGE_TAGS=latest ${GITHUB_SHA::12}" | tee -a $GITHUB_ENV
 
       - name: Setup S2I and Build container
         id: build_image
