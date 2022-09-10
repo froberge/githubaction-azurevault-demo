@@ -1,6 +1,8 @@
 name: Build project on Self-Hosted runner
 on: 
-  push: 
+  push:
+    branches: [ main ]
+
 
 env:
   OPENSHIFT_NAMESPACE: github-runner
