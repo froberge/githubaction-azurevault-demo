@@ -12,8 +12,8 @@ env:
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
 
 jobs: 
-  install_runner: 
-    name: Install Runner 
+  retrieve_secrets: 
+    name: Retrieve Secrets
     runs-on: [  self-hosted, macOS, X64 ]
 
     steps:
@@ -47,7 +47,7 @@ jobs:
   build-quarkus: 
     name: Self Hosted Quarkus Build and Test
     runs-on: [ self-hosted, openshift, java ]          
-    needs: install_runner                               
+    needs: retrieve_secrets                               
 
     env:
       WORKDIR: .                  
