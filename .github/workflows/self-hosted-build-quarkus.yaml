@@ -1,4 +1,4 @@
-name: Build project on Self-Hosted runner
+name: Build Quarkus Application
 on: 
   push:
     branches: [ main ]

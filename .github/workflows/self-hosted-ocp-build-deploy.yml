@@ -5,7 +5,7 @@
 # - Log in to your OpenShift cluster
 # - Create an OpenShift app from the image and expose it to the internet
 
-name: OpenShift-s2i
+name: OpenShift s2i Buidl and deploy
 on:
   push:
     branches: [ main ]
