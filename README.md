@@ -1,15 +1,15 @@
 [![Build project on Self-Hosted runner](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/self-hosted-runner-build.yaml/badge.svg?event=push)](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/self-hosted-runner-build.yaml)
 [![OpenShift-s2i](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/openshift-s2i.yml/badge.svg?event=push)](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/openshift-s2i.yml)
 
-# Introduction to using GitHub Actions Runner on OpenShift.
+# Introduction to using GitHub Actions and Azure Vault.
 
-Welcome to the Introduction to using GitHub Actions Runner on  OpenShift !! 
+Welcome to the Introduction to using GitHub Actions with azure vault.
 
 
-This demo will show how to use self-Hosted GitHub Actions Runners to build and deploy a Quarkus application. For more information on the code refer [here](docs/app-README.md).
+This demo will show how to use self-Hosted GitHub Actions Runners to build a Quarkus application. For more information on the code refer [here](docs/app-README.md).
 
 ## GitHub Action
-[GitHub Action](https://github.com/features/actions), automate, customize and execute your software development workflows right in your repository. You can discover, create and share actions to perform any job you'd like, including CI/CD and combine theses actions in a completely customized workflow.
+[GitHub Action](https://github.com/features/actions), automate, customize and execute your software development workflows right in your repository. You can discover, create and share actions to perform any job you'd like, including CI/CD and combine theses actions in a completely customized workflow. Red Hat also provides a list of actions to help in the creation of workflows related with the creations of Github Actions interacting with OpenShiftt. Refer to the [Red Hat GitHub Action Page](https://github.com/redhat-actions) for more information.
 
 
 ## GitHub Action Runner
@@ -23,7 +23,8 @@ Benefits:
 1. Persistent disk
 
 #### OpenShift Actions runners
-The easiest way to add self-hosted runners to your Red Hat OpenShift environment is to use the `OpenShift Actions Runner Installer`.
+
+Red Hat also provides actions runners to integrates with OpenShift. The easiest way to add self-hosted runners to your Red Hat OpenShift environment is to use the `OpenShift Actions Runner Installer`.
 
 For this demo we will be using GitHug Actions runners onto an existing OpenShift cluster. Red Hat as developed a set of tools to help installing this.
 * [OpenShift Action runner](https://github.com/redhat-actions/openshift-actions-runners) which consist of a set of container images tahat run the GitHub Actions runner
@@ -33,7 +34,13 @@ For this demo we will be using GitHug Actions runners onto an existing OpenShift
 
 ## Overview
 
-In this demo we will walk you through how to use a self-hosted `GitHub Action Runner` on openshift, to build and deploy code on `Red Hat Openshift`. Wee will also secure the GitHub Action using [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview). We will take a look at the self-hosted runner, to run a customize and secure GitHub Actions Workflows using different component from the [Red Hat GitHub Action Page](https://github.com/redhat-actions).
+In the demo we will be demontrating different scenario using GitHub Action, GitHub Actions slef-hosted runners and Azure Vault. 
+
+1. Building the application using self-hosted Github Action Runner
+1. Building an deploying on OpenShift using s2i and sefl-hosted Github Action Runner
+
+
+The different workflows created will be using secrets store inside [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/#product-overview).
 
 
 ### Prerequisites
@@ -46,30 +53,30 @@ In this demo we will walk you through how to use a self-hosted `GitHub Action Ru
 * Access to [Azure Porttal](https://portal.azure.com/#home)
 ---
 
-### DEMO
+### Setup
 
-#### Creation of the Azure Key Vault
+##### Creation of the Azure Key Vault
 In your azure subsctiption create a new Key Vault.
 Name: `githubaction-vault1`
 
-#### Creation of the Azure Service Principal to access Key Vault.
-
+---
+##### Creation of the Azure Service Principal to access Key Vault.
 1. Create a Service Principal for github to access the KeyVault
     ```
     az ad sp create-for-rbac --name github-action --role contributor --scopes /subscriptions/{subscriptionID}/resourceGroups/{resourcegroup} --sdk-auth
     ```
 
-Result. 
-This will return a JSON, you only need the following items. The clientId is needed for the permission grant.
+    __Result:__
+    This will return a JSON, you only need the following items. The clientId is needed for the permission grant.
 
-```
+    ```
     {
         "clientId": "<GUID>",
         "clientSecret": "<GUID>",
         "subscriptionId": "<GUID>",
         "tenantId": "<GUID>"
     }
-```
+    ```
 
 2. Grant access to the service principal to the key Vault to retrieve the different secrets
 
@@ -82,8 +89,7 @@ This will return a JSON, you only need the following items. The clientId is need
 ![github-secret](docs/images/githubazurevault-secret.png)
 
 ---
-
-### Creation of a Service Account in OpenShift
+##### Creation of a Service Account in OpenShift
 
 When logging in to an OpenShift cluster from an automated environment, it is recommended to use a functional Service Account rather than personal credentials. Refer [here](https://cookbook.openshift.org/accessing-an-openshift-cluster/how-can-i-create-a-service-account-for-scripted-access.html).
 
@@ -108,9 +114,9 @@ Steps: ( They were validated on MacOs/Linux)
     ```
     oc policy add-role-to-user edit -z $SA
     ```
+    
 ---
-
-### Adding secret in Azure Key Vault.
+##### Adding secret in Azure Key Vault.
 
 We need to create 3 secrets in the azure key vault.
 
@@ -128,9 +134,22 @@ We need to create 3 secrets in the azure key vault.
 ![azurekeyvault](docs/images/azure-key-vault-1.png)
 
 ---
+##### Adding a self-hosted macOs runners.
 
-#### Pipeline Path
+Some workflows will be using Self-hosted Github runner. In this example we will be using `macOs` runners, but the mechanism would be the same if you wanted to use a linux or windows self-hosted runner.
 
+1. Go to the repository setting in the Action -> Runner section.
+![runnner-setting1](docs/images/create-runner-1.png)
+
+2. Click `New self-hosted runner`
+![runnner-setting2](docs/images/create-runner-2.png)
+
+select the proper architecture and runner image wanted.
+
+3. Follow the indication on the screen on your machine to download and configure it.
+
+---
+#### Demo 1 - Building the application using self-hosted Github Action Runner
 ```mermaid
 flowchart LR;
     A(Connect to Azure) --> B(Retrieve Secrets in Vault);
@@ -139,3 +158,10 @@ flowchart LR;
     D --> E(Build the Application)
     E --> F(Upload packaged App)
 ```
+
+Run the self-hosted-build workflows
+
+---
+#### Demo 2 - Building an deploying on OpenShift using s2i and sefl-hosted Github Action Runner
+
+---
