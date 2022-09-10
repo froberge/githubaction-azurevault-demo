@@ -101,24 +101,4 @@ jobs:
           app_name: ${{ env.APP_NAME }}
           image: ${{ steps.push-image.outputs.registry-path }}
           namespace: ${{ env.OPENSHIFT_NAMESPACE }}
-          port: ${{ env.APP_PORT }}
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: froberge/ocp-githubaction-azurevault-demo
-
-      - name: Run tests
-        run: ./mvnw test
-        working-directory: ${{ env.WORKDIR }}
-
-      - name: Clean and Package
-        run: ./mvnw clean package
-        working-directory: ${{ env.WORKDIR }}
-
-      - name: Upload jar artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.APP_NAME}}-${{env.TAGS}}
-          path: ${{ env.WORKDIR }}/target/quarkus-app/*
-          
+          port: ${{ env.APP_PORT }}          
