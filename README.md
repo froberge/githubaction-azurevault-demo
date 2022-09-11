@@ -1,3 +1,6 @@
+[![Build Quarkus Application](https://github.com/froberge/githubaction-azurevault-demo/actions/workflows/self-hosted-build.yaml/badge.svg?event=push)](https://github.com/froberge/githubaction-azurevault-demo/actions/workflows/self-hosted-build.yaml)
+[![Build and Deploy Quarkus Application on OCP](https://github.com/froberge/githubaction-azurevault-demo/actions/workflows/self-hosted-build_deploy_ocp.yaml/badge.svg)](https://github.com/froberge/githubaction-azurevault-demo/actions/workflows/self-hosted-build_deploy_ocp.yaml)
+
 # Introduction to using GitHub Actions and Azure Vault.
 
 Welcome to the Introduction to using GitHub Actions with azure vault.

@@ -7,7 +7,8 @@ env:
   OPENSHIFT_NAMESPACE: github-runner
   APP_NAME: "simple-quarkus-service-gh-action"
   TAGS: latest-${{ github.sha }}
-
+  IMAGE_REGISTRY: quay.io/froberge
+  
   AZURE_KEY_VAULT: githubaction-vault1
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
 
