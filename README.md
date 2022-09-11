@@ -112,7 +112,10 @@ Steps: ( They were validated on MacOs/Linux)
     ```
 1. Give write permission to the Service Account
     ```
-    oc policy add-role-to-user edit -z $SA
+    oc policy add-role-to-user admin -z $SA
+    ```
+    ```
+    oc policy add-role-to-user admin -z default -n github-runner
     ```
     
 ---

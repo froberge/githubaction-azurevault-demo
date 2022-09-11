@@ -61,21 +61,21 @@ jobs:
           tags: ${{ env.IMAGE_TAGS }}
           builder_image: 'registry.access.redhat.com/openjdk/openjdk-11-rhel7'
 
-      # - name: Push to registry
-      #   id: push-image
-      #   uses: redhat-actions/push-to-registry@v2
-      #   with:
-      #     image: ${{ steps.build_image.outputs.image }}
-      #     tags: ${{ steps.build_image.outputs.tags }}
-      #     registry: ${{ env.IMAGE_REGISTRY }}
-      #     username: ${{ steps.vaultSecrets.outputs.registry-user}}
-      #     password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
+      - name: Push to registry
+        id: push-image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: froberge+githubactions
+          password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
 
       # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
-      - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: 4
+      # - name: Install oc
+      #   uses: redhat-actions/openshift-tools-installer@v1
+      #   with:
+      #     oc: 4
 
       # - name: Log in to OpenShift
       #   uses: redhat-actions/oc-login@v1
@@ -91,7 +91,6 @@ jobs:
         uses: redhat-actions/oc-new-app@v1
         with:
           app_name: ${{ env.APP_NAME }}
-          image: ${{ steps.build_image.outputs.image }}
-          # image: ${{ steps.push-image.outputs.registry-path }}
+          image: ${{ steps.push-image.outputs.registry-path }}
           namespace: ${{ env.OPENSHIFT_NAMESPACE }}
           port: ${{ env.APP_PORT }}          
