@@ -8,7 +8,8 @@ env:
   APP_NAME: "simple-quarkus-service-gh-action"
   TAGS: latest-${{ github.sha }}
   IMAGE_REGISTRY: quay.io/froberge
-  
+  QUAY_SECRET:  ${{ secrets.QUAY_SECRET }}
+
   AZURE_KEY_VAULT: githubaction-vault1
   AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -70,7 +71,8 @@ jobs:
           tags: ${{ steps.build_image.outputs.tags }}
           registry: ${{ env.IMAGE_REGISTRY }}
           username: froberge+githubactions
-          password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
+          # password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
+          password: ${{ env.QUAY_SECRET }}
 
       # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
       # - name: Install oc
