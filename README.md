@@ -1,6 +1,3 @@
-[![Build project on Self-Hosted runner](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/self-hosted-runner-build.yaml/badge.svg?event=push)](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/self-hosted-runner-build.yaml)
-[![OpenShift-s2i](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/openshift-s2i.yml/badge.svg?event=push)](https://github.com/froberge/ocp-githubaction-azurevault-demo/actions/workflows/openshift-s2i.yml)
-
 # Introduction to using GitHub Actions and Azure Vault.
 
 Welcome to the Introduction to using GitHub Actions with azure vault.
