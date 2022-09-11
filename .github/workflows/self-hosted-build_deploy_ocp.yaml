@@ -42,8 +42,7 @@ jobs:
       - uses: redhat-actions/openshift-actions-runner-installer@v1 
         with: 
           github_pat: ${{ steps.az_secrets.outputs.gh-access-pat }} 
-          runner_labels: openshift, buildah
-          # runner_location: redhat-actions                               
+          runner_labels: openshift, buildah          
           runner_image: quay.io/redhat-github-actions/buildah-runner 
   build-deploy: 
     name: Self Hosted OCP Build and Deploy
@@ -63,16 +62,16 @@ jobs:
           tags: ${{ env.IMAGE_TAGS }}
           builder_image: 'registry.access.redhat.com/openjdk/openjdk-11-rhel7'
 
-      - name: Push to registry
-        id: push-image
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build_image.outputs.image }}
-          tags: ${{ steps.build_image.outputs.tags }}
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: froberge+githubactions
-          # password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
-          password: ${{ env.QUAY_SECRET }}
+      # - name: Push to registry
+      #   id: push-image
+      #   uses: redhat-actions/push-to-registry@v2
+      #   with:
+      #     image: ${{ steps.build_image.outputs.image }}
+      #     tags: ${{ steps.build_image.outputs.tags }}
+      #     registry: ${{ env.IMAGE_REGISTRY }}
+      #     username: froberge+githubactions
+      #     # password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
+      #     password: ${{ env.QUAY_SECRET }}
 
       # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
       # - name: Install oc
@@ -94,6 +93,6 @@ jobs:
         uses: redhat-actions/oc-new-app@v1
         with:
           app_name: ${{ env.APP_NAME }}
-          image: ${{ steps.push-image.outputs.registry-path }}
+          image: ${{ steps.build_image.outputs.image }}:${{ steps.build_image.outputs.tags }}
           namespace: ${{ env.OPENSHIFT_NAMESPACE }}
           port: ${{ env.APP_PORT }}          
