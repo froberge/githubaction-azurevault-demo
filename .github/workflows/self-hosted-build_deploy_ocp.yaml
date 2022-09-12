@@ -10,7 +10,7 @@ env:
 
   TAGS: latest-${{ github.sha }}
   IMAGE_REGISTRY: quay.io/froberge
-  
+
   QUAY_SECRET:  ${{ secrets.QUAY_SECRET }}
 
   AZURE_KEY_VAULT: githubaction-vault1
@@ -46,7 +46,7 @@ jobs:
         with: 
           github_pat: ${{ steps.az_secrets.outputs.gh-access-pat }} 
           runner_labels: openshift, buildah         
-          runner_image: quay.io/redhat-github-actions/buildah-runner 
+          runner_image: quay.io/redhat-github-actions/buildah-runner
   build-deploy: 
     name: Self Hosted OCP Build and Deploy
     runs-on: [ self-hosted, openshift, buildah ]          
