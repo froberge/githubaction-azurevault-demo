@@ -6,8 +6,11 @@ on:
 env:
   OPENSHIFT_NAMESPACE: github-runner
   APP_NAME: "simple-quarkus-service-gh-action"
+  APP_PORT: ""
+
   TAGS: latest-${{ github.sha }}
   IMAGE_REGISTRY: quay.io/froberge
+  
   QUAY_SECRET:  ${{ secrets.QUAY_SECRET }}
 
   AZURE_KEY_VAULT: githubaction-vault1
@@ -62,6 +65,7 @@ jobs:
           tags: ${{ env.IMAGE_TAGS }}
           builder_image: 'registry.access.redhat.com/openjdk/openjdk-11-rhel7'
 
+      # The path the image pushed is stored in ${{ steps.push-image.outputs.registry-path }}
       - name: Push to registry
         id: push-image
         uses: redhat-actions/push-to-registry@v2
@@ -73,7 +77,6 @@ jobs:
           # password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
           password: ${{ env.QUAY_SECRET }}
 
-      # The path the image was pushed to is now stored in ${{ steps.push-image.outputs.registry-path }}
       # - name: Install oc
       #   uses: redhat-actions/openshift-tools-installer@v1
       #   with:
@@ -88,11 +91,11 @@ jobs:
       #     namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
       # This step should create a deployment, service, and route to run your app and expose it to the internet.
-      # - name: Create and expose app
-      #   id: deploy-and-expose
-      #   uses: redhat-actions/oc-new-app@v1
-      #   with:
-      #     app_name: ${{ env.APP_NAME }}
-      #     image: ${{ steps.push-image.outputs.registry-path }}
-      #     namespace: ${{ env.OPENSHIFT_NAMESPACE }}
-      #     port: ${{ env.APP_PORT }}          
+      - name: Create and expose app
+        id: deploy-and-expose
+        uses: redhat-actions/oc-new-app@v1
+        with:
+          app_name: ${{ env.APP_NAME }}
+          image: ${{ steps.push-image.outputs.registry-path }}
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+          port: ${{ env.APP_PORT }}          
