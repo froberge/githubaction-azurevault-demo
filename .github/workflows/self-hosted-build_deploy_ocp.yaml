@@ -1,0 +1,101 @@
+name: Build and Deploy Quarkus Application on OCP
+on: 
+  push:
+    branches: [ build_deploy ]
+
+env:
+  OPENSHIFT_NAMESPACE: github-runner
+  APP_NAME: "simple-quarkus-service-gh-action"
+  APP_PORT: ""
+
+  TAGS: latest-${{ github.sha }}
+  IMAGE_REGISTRY: quay.io/froberge
+
+  QUAY_SECRET:  ${{ secrets.QUAY_SECRET }}
+
+  AZURE_KEY_VAULT: githubaction-vault1
+  AZURE_CREDENTIALS:  ${{ secrets.AZURE_CREDENTIALS }}
+
+jobs:
+  retrieve_secrets: 
+    name: Retrieve Secrets
+    runs-on: [  self-hosted, macOS, X64 ]
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
+
+      - name: Retrieve Key Vault Secrets
+        id: az_secrets
+        uses: Azure/get-keyvault-secrets@v1
+        with:
+          keyvault: ${{ env.AZURE_KEY_VAULT }}
+          secrets: 'ocp-server,ocp-github-actions-sa-token, gh-access-pat'
+
+      - name: Log in to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ steps.az_secrets.outputs.ocp-server }}
+          openshift_token: ${{ steps.az_secrets.outputs.ocp-github-actions-sa-token }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+      
+      - uses: redhat-actions/openshift-actions-runner-installer@v1 
+        with: 
+          github_pat: ${{ steps.az_secrets.outputs.gh-access-pat }} 
+          runner_labels: openshift, buildah         
+          runner_image: quay.io/redhat-github-actions/buildah-runner
+  build-deploy: 
+    name: Self Hosted OCP Build and Deploy
+    runs-on: [ self-hosted, openshift, buildah ]          
+    needs: retrieve_secrets                               
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: froberge/ocp-githubaction-azurevault-demo
+
+      - name: Setup S2I and Build container
+        id: build_image
+        uses: redhat-actions/s2i-build@v2
+        with:
+          image: ${{ env.APP_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
+          builder_image: 'registry.access.redhat.com/openjdk/openjdk-11-rhel7'
+
+      # The path the image pushed is stored in ${{ steps.push-image.outputs.registry-path }}
+      - name: Push to registry
+        id: push-image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: froberge+githubactions
+          # password: ${{ steps.vaultSecrets.outputs.registry-pwd }}
+          password: ${{ env.QUAY_SECRET }}
+
+      # - name: Install oc
+      #   uses: redhat-actions/openshift-tools-installer@v1
+      #   with:
+      #     oc: 4
+
+      # - name: Log in to OpenShift
+      #   uses: redhat-actions/oc-login@v1
+      #   with:
+      #     openshift_server_url: ${{ steps.vaultSecrets.outputs.ocp-server }}
+      #     openshift_token: ${{ steps.vaultSecrets.outputs.ocp-github-actions-sa-token }}
+      #     insecure_skip_tls_verify: true
+      #     namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+
+      # This step should create a deployment, service, and route to run your app and expose it to the internet.
+      - name: Create and expose app
+        id: deploy-and-expose
+        uses: redhat-actions/oc-new-app@v1
+        with:
+          app_name: ${{ env.APP_NAME }}
+          image: ${{ steps.push-image.outputs.registry-path }}
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+          port: ${{ env.APP_PORT }}          
